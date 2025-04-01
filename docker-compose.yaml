@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: user
+      POSTGRES_DB: my_database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - my_network
+
+  app:
+    build: .
+    container_name: my_app
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: my_database
+      DB_USER: postgres
+      DB_PASSWORD: user
+    ports:
+      - "8080:8080"
+    networks:
+      - my_network
+
+  flyway:
+    image: flyway/flyway:latest
+    container_name: flyway
+    depends_on:
+      - db
+    environment:
+      FLYWAY_URL: jdbc:postgresql://db:5432/my_database
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: user
+      FLYWAY_LOCATIONS: filesystem:/flyway/sql
+    volumes:
+      - ./migrations:/flyway/sql  # Подключаем папку с миграциями
+    networks:
+      - my_network
+    command: migrate
+
+volumes:
+  postgres_data:
+
+networks:
+  my_network:

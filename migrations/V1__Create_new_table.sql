@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS tasks2 (
+    id SERIAL PRIMARY KEY,
+    user_token VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    deadline VARCHAR(255) NOT NULL,
+    duration INT NOT NULL,
+    link VARCHAR(255) NOT NULL
+);
